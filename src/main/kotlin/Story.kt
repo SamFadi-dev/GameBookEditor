@@ -25,4 +25,20 @@ data class Story(
 
         return builder.toString()
     }
+
+    fun storyCopy(): Story {
+        val copy = Story(
+            title = this.title,
+            startNodeId = this.startNodeId,
+            nodes = this.nodes.mapValues { (_, node) ->
+                Node(
+                    id = node.id,
+                    text = node.text.toMutableList(),
+                    actions = node.actions.map { it.copy() }.toMutableList()
+                )
+            }.toMutableMap()
+        )
+        return copy
+    }
+
 }

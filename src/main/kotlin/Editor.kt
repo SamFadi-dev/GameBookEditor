@@ -6,6 +6,7 @@ class Editor {
     private var story: Story? = null
     private var currentNodeId: Int? = null
     private val commandManager = CommandManager()
+    private val mementos = mutableListOf<Memento>()
 
     fun start() {
         val scanner = Scanner(System.`in`)
@@ -29,6 +30,7 @@ class Editor {
                     try {
                         story = readMiniTweeFile(path)
                         currentNodeId = story?.startNodeId
+                        saveSnapshot()
                         println("Story loaded: ${story?.title}")
                         displayCurrentNode()
                     } catch (e: Exception) {
@@ -81,6 +83,7 @@ class Editor {
                                 commandManager.execute(cmd)
                                 println("Text updated for node ${node.id}.")
                                 displayCurrentNode()
+                                saveSnapshot()
                             }
                         }
 
@@ -110,6 +113,7 @@ class Editor {
                             commandManager.execute(cmd)
                             println("✅ Action set.")
                             displayCurrentNode()
+                            saveSnapshot()
                         }
 
                         else -> println("Unknown set command: ${subparts[0]}")
@@ -128,6 +132,20 @@ class Editor {
 
                 "history" -> {
                     commandManager.history()
+                }
+
+                "revert" -> {
+                    val index = parts.getOrNull(1)?.toIntOrNull()
+                    if (index == null || index < 0 || index >= mementos.size) {
+                        println("Usage: revert <index> (0 to ${mementos.size-1})")
+                        continue
+                    }
+
+                    val snapshot = mementos[mementos.size - 1 - index]
+                    story = snapshot.storySnapshot.storyCopy()
+                    currentNodeId = snapshot.currentNodeId
+                    println("Reverted to state #$index")
+                    displayCurrentNode()
                 }
 
                 else -> println("Unknown command: ${parts[0]}")
@@ -157,4 +175,11 @@ class Editor {
 
         println()
     }
+
+    private fun saveSnapshot() {
+        story?.let {
+            mementos.add(Memento(it.storyCopy(), currentNodeId))
+        }
+    }
+
 }
