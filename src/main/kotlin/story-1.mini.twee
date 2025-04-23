@@ -1,0 +1,30 @@
+:: StoryTitle
+Sart-Tilman Quick Trip
+
+:: StoryData
+{ "start": 1 }
+
+:: 1
+Your course has just ended at the Amphithéâtre de l'Europe (B4).
+You can either head to the university restaurant or step into the woods.
+[[Head to the cafetaria->2]]
+[[Go into the woods of Colonster->3]]
+
+:: 2
+You are at the restaurant.
+Feeling full after your meal, you might head back towards the B4, or perhaps
+take a digestive walk?
+[[Go to B4->4]]
+[[Take a walk in the woods->3]]
+
+:: 3
+You've entered the woods de Colonster.
+You can hear the gentle sound of the stream of the Blanc Gravier.
+[[Follow the stream->5]]
+
+:: 4
+Back at the B4, it's time for your next activity.
+
+:: 5
+You follow the peaceful Rau du Blanc Gravier through the woods and arrive at
+the old mill of Colonster.
