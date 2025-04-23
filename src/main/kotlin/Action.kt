@@ -1,3 +1,3 @@
 package gamebook.editor
 
-data class Action(val label: String, val targetId: Int)
+data class Action(val label: String, var targetId: Int)

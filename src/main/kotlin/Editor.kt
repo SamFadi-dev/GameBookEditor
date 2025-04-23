@@ -116,6 +116,36 @@ class Editor {
                             saveSnapshot()
                         }
 
+                        "ids" -> {
+                            val args = subparts.getOrNull(1)?.split(" ")
+                            if (args == null || args.size != 3) {
+                                println("Usage: set ids <id from> <id to> <+/-diff>")
+                                continue
+                            }
+
+                            val from = args[0].toIntOrNull()
+                            val to = args[1].toIntOrNull()
+                            val diff = args[2].toIntOrNull()
+
+                            if (from == null || to == null || diff == null) {
+                                println("Invalid arguments.")
+                                continue
+                            }
+
+                            try {
+                                val cmd = SetIdsCommand(story!!, from, to, diff)
+                                commandManager.execute(cmd)
+                                if (currentNodeId in from..to) {
+                                    currentNodeId = currentNodeId?.plus(diff)
+                                }
+                                saveSnapshot()
+                                println("✅ Node IDs updated.")
+                                displayCurrentNode()
+                            } catch (e: Exception) {
+                                println(e.message)
+                            }
+                        }
+
                         else -> println("Unknown set command: ${subparts[0]}")
                     }
                 }
@@ -132,6 +162,12 @@ class Editor {
 
                 "history" -> {
                     commandManager.history()
+                }
+
+                "list" -> {
+                    story?.nodes?.keys?.sorted()?.forEach { id ->
+                        println("Node ID: $id")
+                    }
                 }
 
                 "revert" -> {
