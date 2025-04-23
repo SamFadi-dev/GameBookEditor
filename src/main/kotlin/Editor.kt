@@ -7,6 +7,7 @@ class Editor {
     private var currentNodeId: Int? = null
     private val commandManager = CommandManager()
     private val mementos = mutableListOf<Memento>()
+    private var loadedFilePath: String? = null
 
     fun start() {
         val scanner = Scanner(System.`in`)
@@ -30,6 +31,7 @@ class Editor {
                     try {
                         story = readMiniTweeFile(path)
                         currentNodeId = story?.startNodeId
+                        loadedFilePath = path
                         saveSnapshot()
                         println("Story loaded: ${story?.title}")
                         displayCurrentNode()
@@ -48,7 +50,12 @@ class Editor {
                 }
 
                 "save" -> {
-                    val filename = parts.getOrNull(1) ?: "story_saved.mini.twee"
+                    // Save in the path, and if null => save in the current file
+                    val filename = parts.getOrNull(1) ?: loadedFilePath
+                    if (filename == null) {
+                        println("No file loaded and no filename specified.")
+                        continue
+                    }
                     val story = story
                     if (story == null) {
                         println("No story to save.")
