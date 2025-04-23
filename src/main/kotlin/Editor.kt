@@ -5,6 +5,7 @@ import java.util.Scanner
 class Editor {
     private var story: Story? = null
     private var currentNodeId: Int? = null
+    private val commandManager = CommandManager()
 
     fun start() {
         val scanner = Scanner(System.`in`)
@@ -59,15 +60,28 @@ class Editor {
                             if (node == null) {
                                 println("❌ No current node selected.")
                             } else {
-                                node.text.clear()
-                                node.text.addAll(lines)
+                                val cmd = SetTextCommand(node, lines)
+                                commandManager.execute(cmd)
                                 println("✅ Text updated for node ${node.id}.")
                                 displayCurrentNode()
                             }
                         }
-
                         else -> println("Unknown set command: ${subparts[0]}")
                     }
+                }
+
+                "undo" -> {
+                    commandManager.undo()
+                    displayCurrentNode()
+                }
+
+                "redo" -> {
+                    commandManager.redo()
+                    displayCurrentNode()
+                }
+
+                "history" -> {
+                    commandManager.history()
                 }
 
                 else -> println("Unknown command: ${parts[0]}")
