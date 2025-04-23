@@ -28,6 +28,10 @@ class Editor {
                         continue
                     }
                     val path = parts[1]
+                    if (!path.endsWith(".mini.twee")) {
+                        println("Invalid file extension. Please open a .mini.twee file.")
+                        continue
+                    }
                     try {
                         story = readMiniTweeFile(path)
                         currentNodeId = story?.startNodeId
