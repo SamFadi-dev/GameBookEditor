@@ -49,7 +49,7 @@ class Editor {
                     val subparts = parts.getOrNull(1)?.split(" ", limit = 2)
                     if (subparts == null || subparts.size < 2) {
                         println("Usage: set text <new text>")
-                        return
+                        continue
                     }
 
                     when (subparts[0]) {
@@ -58,14 +58,43 @@ class Editor {
                             val lines = newTextRaw.split("\\")
                             val node = story?.nodes?.get(currentNodeId)
                             if (node == null) {
-                                println("❌ No current node selected.")
+                                println("/!\\ No current node selected.")
                             } else {
                                 val cmd = SetTextCommand(node, lines)
                                 commandManager.execute(cmd)
-                                println("✅ Text updated for node ${node.id}.")
+                                println("Text updated for node ${node.id}.")
                                 displayCurrentNode()
                             }
                         }
+
+                        "action" -> {
+                            val args = subparts.getOrNull(1)?.split(" ", limit = 3)
+                            if (args == null || args.size < 3) {
+                                println("Usage: set action <index> <targetId> <label>")
+                                continue
+                            }
+
+                            val index = args[0].toIntOrNull()
+                            val targetId = args[1].toIntOrNull()
+                            val label = args[2]
+
+                            if (index == null || targetId == null || targetId < 0 || index < 0) {
+                                println("Invalid index or targetId.")
+                                continue
+                            }
+
+                            val node = story?.nodes?.get(currentNodeId)
+                            if (node == null) {
+                                println("/!\\ No current node selected.")
+                                continue
+                            }
+
+                            val cmd = SetActionCommand(node, index, Action(label, targetId))
+                            commandManager.execute(cmd)
+                            println("✅ Action set.")
+                            displayCurrentNode()
+                        }
+
                         else -> println("Unknown set command: ${subparts[0]}")
                     }
                 }
