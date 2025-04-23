@@ -45,6 +45,23 @@ class Editor {
                     displayCurrentNode()
                 }
 
+                "save" -> {
+                    val filename = parts.getOrNull(1) ?: "story_saved.mini.twee"
+                    val story = story
+                    if (story == null) {
+                        println("No story to save.")
+                        continue
+                    }
+
+                    try {
+                        val output = story.toMiniTwee()
+                        java.io.File(filename).writeText(output)
+                        println("Story saved to $filename")
+                    } catch (e: Exception) {
+                        println("Failed to save: ${e.message}")
+                    }
+                }
+
                 "set" -> {
                     val subparts = parts.getOrNull(1)?.split(" ", limit = 2)
                     if (subparts == null || subparts.size < 2) {
