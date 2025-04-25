@@ -45,10 +45,10 @@ class Editor {
                 }
 
                 "node" -> {
-                    if (parts.size < 2) {
-                        currentNodeId = story?.startNodeId
+                    currentNodeId = if (parts.size < 2) {
+                        story?.startNodeId
                     } else {
-                        currentNodeId = parts[1].toIntOrNull()
+                        parts[1].toIntOrNull()
                     }
                     displayCurrentNode()
                 }
@@ -86,16 +86,16 @@ class Editor {
                         "text" -> {
                             val newTextRaw = subparts[1]
                             val lines = newTextRaw.split("\\")
-                            val node = story?.nodes?.get(currentNodeId)
-                            if (node == null) {
-                                println("/!\\ No current node selected.")
-                            } else {
-                                val cmd = SetTextCommand(node, lines)
-                                commandManager.execute(cmd)
-                                println("Text updated for node ${node.id}.")
-                                displayCurrentNode()
-                                saveSnapshot()
+                            if (story == null || currentNodeId == null) {
+                                println("No story or current node selected.")
+                                continue
                             }
+
+                            val cmd = CreateAndSetTextCommand(story!!, currentNodeId!!, lines)
+                            commandManager.execute(cmd)
+                            saveSnapshot()
+                            println("✅ Text updated for node $currentNodeId.")
+                            displayCurrentNode()
                         }
 
                         "action" -> {
@@ -175,6 +175,7 @@ class Editor {
                     commandManager.history()
                 }
 
+                // Debugging purpose
                 "list" -> {
                     story?.nodes?.keys?.sorted()?.forEach { id ->
                         println("Node ID: $id")
@@ -204,10 +205,9 @@ class Editor {
         val story = story ?: return println("No story loaded.")
         val node = story.nodes[currentNodeId]
         if (node == null) {
-            println("❌ Node $currentNodeId not found. Check that your 'start' points to an existing node.")
+            println("\nNode $currentNodeId does not exist yet. You can create it with 'set text ...'")
             return
         }
-
 
         println("\nStory Title: ${story.title}")
         println("Start Node: ${story.startNodeId}")
